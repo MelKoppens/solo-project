@@ -15,31 +15,32 @@ const Board = (props) => {
   // function to change box states
   const changeBoxState = (rowNum, boxNum) => {
 
-    // /*
-    // *** find correct box to change (animated change) ***
-    const stateIdx = (7 * rowNum) + boxNum + 7;
     // if the column is full, do not change the state
-    if (entries[stateIdx] !== ' ') return;
+    if (entries[boxNum] !== ' ') return;
 
-    // change specific box depending on whos turn it is
     let newArr;
-    (circleTurn) 
-      ? newArr = entries.toSpliced(stateIdx, 1, 'o') 
-      : newArr = entries.toSpliced(stateIdx, 1, 'x');
-    if (stateIdx >= 7) newArr = newArr.toSpliced(stateIdx - 7, 1, ' ');
+    // ***  function to find correct box to change and animate drop ***
+    async function animate(box) {
+      // const stateIdx = (7 * row) + box + 7;
+      while (entries[box] === ' ') {
 
-    // set the change
-    setEntries(newArr);
+        // change specific box depending on whos turn it is
+        (circleTurn) 
+          ? newArr = entries.toSpliced(box, 1, 'o') 
+          : newArr = entries.toSpliced(box, 1, 'x');
+        if (box >= 7) newArr = newArr.toSpliced(box - 7, 1, ' ');
+    
+        // set the change
+        setEntries(newArr);
 
-    // animate the token drop
-    if (entries[stateIdx + 7] === ' ') {
-      setTimeout(() => {
-        changeBoxState(rowNum + 1, boxNum);
-      }, "60");
-      console.log('test');
+        // animate the box at certain step speed
+        await waitForMe(80);
+        box+=7;
+      }
+      checkSetWinner(newArr);
     }
-    // */
 
+    animate(boxNum);
 
     /*
     // *** find correct box to change (instant change) ***
@@ -64,20 +65,21 @@ const Board = (props) => {
     setEntries(newArr);
     */
 
-    // wait function
+    // generic wait function
     function waitForMe(ms) {
       return new Promise( resolve => {
         setTimeout(() => resolve(''), ms);
       })
-    }
+    };
 
     // change turns
     setCircleTurn(!circleTurn);
 
     // Tests if there is 4 in a row
-    // helper function
+    // checkFour is a helper function, returns winner if any else returns ' '
     function checkFour(arr, mode) {
       let iEnd, jEnd, offset, step;
+      let winner = ' ';
       switch (mode) {
         case 'row': iEnd = 6; jEnd = 4; offset = 0; step = 1; break;
         case 'column': iEnd = 3; jEnd = 7; offset = 0; step = 7; break;
@@ -96,28 +98,30 @@ const Board = (props) => {
           }
         }
       }
+      return winner;
     };
 
-    let winner = ' ';
-    let modes = ['row', 'column', 'down-d', 'up-d'];
+    // checks if there is a winner, if so adjusts the score and sets game over
+    function checkSetWinner(arr) {
+      let winner = ' ';
+      let modes = ['row', 'column', 'down-d', 'up-d'];
 
-    
-    for (let i = 0; i < 4; i++) {
-      console.log()
-      checkFour(newArr, modes[i]);
-      if (winner !== ' ') break;
-    }
-    
-    if (winner !== ' ') {
-      console.log('Winner!!!');
-      (winner === 'o')
-        ? setOScore(oScore + 1)
-        : setXScore(xScore + 1);
+      for (let i = 0; i < 4; i++) {
+        winner = checkFour(arr, modes[i]);
+        if (winner !== ' ') break;
+      }
       
-      // update winner message
-      setGameOver(true);
-      setMsg('Winner: ' + winner.toUpperCase());
-    }
+      if (winner !== ' ') {
+        console.log('Winner!!!');
+        (winner === 'o')
+          ? setOScore(oScore + 1)
+          : setXScore(xScore + 1);
+        
+        // update winner message
+        setGameOver(true);
+        setMsg('Winner: ' + winner.toUpperCase());
+      }
+    };
   };
 
   // funtion to reset game
