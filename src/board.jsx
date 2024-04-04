@@ -12,9 +12,6 @@ const Board = (props) => {
   const [oScore, setOScore] = useState(0);
   const [xScore, setXScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  // can't do below, even if we don't plan any re-rending with circleTurn
-  // any dynamic state change must use hooks
-  // let circleTurn = true;
 
   // function to change box states
   const changeBoxState = (rowNum, boxNum) => {
@@ -28,9 +25,6 @@ const Board = (props) => {
 
     const stateIdx = (7 * bottomRowNum) + boxNum;
 
-    // console.log('changing box between o and x', stateIdx);
-    // console.log('entries[stateIdx]: ', entries[stateIdx]);
-
     // change specific box depending on whos turn it is
     setCount(count+1);
     console.log('count: 37' + count);
@@ -42,7 +36,6 @@ const Board = (props) => {
 
     // set the change
     setEntries(newArr);
-    console.log('entries[stateIdx] line 46: ', entries[stateIdx]);
 
     // change turns
     setCircleTurn(!circleTurn);
@@ -50,6 +43,37 @@ const Board = (props) => {
     // Tests if there is 4 in a row
     let winner = ' ';
 
+    //  *** dry method ***
+    function checkFour(arr, mode) {
+      let iEnd, jEnd, offset, step;
+      switch (mode) {
+        case 'row': iEnd = 6; jEnd = 4; offset = 0; step = 1; break;
+        case 'column': iEnd = 3; jEnd = 7; offset = 0; step = 7; break;
+        case 'down-d': iEnd = 3; jEnd = 4; offset = 0; step = 8; break;
+        case 'up-d': iEnd = 3; jEnd = 4; offset = 3; step = 6; break;
+      }
+      outerLoop: for (let i = 0; i < iEnd; i++) {
+        innerLoop: for (let j = 0; j < jEnd; j++) {
+          if (arr[7 * i + j + offset] === arr[7 * i + j + offset + step] &&
+            arr[7 * i + j + offset + step] === arr[7 * i + j + offset + 2 * step] &&
+            arr[7 * i + j + offset + 2 * step] === arr[7 * i + j + offset + 3 * step]) {
+            if (arr[7 * i + j + offset] !== ' ') {
+              winner = arr[7 * i + j + offset];
+              break outerLoop;
+            } 
+          }
+        }
+      }
+    };
+
+    let modes = ['row', 'column', 'down-d', 'up-d'];
+    for (let i = 0; i < 4; i++) {
+      checkFour(newArr, modes[i]);
+      if (winner !== ' ') break;
+    }
+
+    /*
+    //  *** wet method ***
     // rows
     for (let i = 0; i < 6; i++) {
       for (let j = 0; j < 4; j++) {
@@ -69,9 +93,9 @@ const Board = (props) => {
       }
     }
 
-    // colums
-    for (let j = 0; j < 7; j++) {
-      for (let i = 0; i < 3; i++) {
+    // columns
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 7; j++) {
         if (
           'o' === newArr[7 * i + j] && 
           newArr[7 * i + j] === newArr[7 * i + j + 7] &&
@@ -125,10 +149,54 @@ const Board = (props) => {
         }
       }
     }
+    */
     
+    /*
+    //  *** less wet method ***
+    // rows
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (newArr[7 * i + j] === newArr[7 * i + j + 1] &&
+          newArr[7 * i + j + 1] === newArr[7 * i + j + 2] &&
+          newArr[7 * i + j + 2] === newArr[7 * i + j + 3]) {
+          if (newArr[7 * i + j] !== ' ') winner = newArr[7 * i + j];
+        }
+      }
+    }
 
+    // columns
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 7; j++) {
+        if (newArr[7 * i + j] === newArr[7 * i + j + 7] &&
+          newArr[7 * i + j + 7] === newArr[7 * i + j + 14] &&
+          newArr[7 * i + j + 14] === newArr[7 * i + j + 21]) {
+          if (newArr[7 * i + j] !== ' ') winner = newArr[7 * i + j];
+        }
+      }
+    }
 
-    
+    // down-diagonals
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (newArr[7 * i + j] === newArr[7 * i + j + 8] &&
+          newArr[7 * i + j + 8] === newArr[7 * i + j + 16] &&
+          newArr[7 * i + j + 16] === newArr[7 * i + j + 24]) {
+          if (newArr[7 * i + j] !== ' ') winner = newArr[7 * i + j];
+        }
+      }
+    }
+
+    // up-diagonals
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (newArr[7 * i + j + 3] === newArr[7 * i + j + 9] &&
+          newArr[7 * i + j + 9] === newArr[7 * i + j + 15] &&
+          newArr[7 * i + j + 15] === newArr[7 * i + j + 21]) {
+          if (newArr[7 * i + j + 3] !== ' ') winner = newArr[7 * i + j + 3];
+        }
+      }
+    }
+    */
 
     if (winner !== ' ') {
       console.log('Winner!!!');
@@ -140,39 +208,6 @@ const Board = (props) => {
       setGameOver(true);
       setMsg('Winner: ' + winner);
     }
-
-
-    
-    // const winArr = [];
-    // // rows
-    // winArr.push([(newArr[0] === newArr[1] && newArr[1] === newArr[2]), newArr[0]]);
-    // winArr.push([(newArr[3] === newArr[4] && newArr[4] === newArr[5]), newArr[3]]);
-    // winArr.push([(newArr[6] === newArr[7] && newArr[7] === newArr[8]), newArr[6]]);
-    // // cols
-    // winArr.push([(newArr[0] === newArr[3] && newArr[3] === newArr[6]), newArr[0]]);
-    // winArr.push([(newArr[1] === newArr[4] && newArr[4] === newArr[7]), newArr[1]]);
-    // winArr.push([(newArr[2] === newArr[5] && newArr[5] === newArr[8]), newArr[2]]);
-    // // diags
-    // winArr.push([(newArr[0] === newArr[4] && newArr[4] === newArr[8]), newArr[0]]);
-    // winArr.push([(newArr[2] === newArr[4] && newArr[4] === newArr[6]), newArr[6]]);
-
-
-    // for (let i = 0; i < winArr.length; i++) {
-    //   // is it true? if false, then skip below
-    //   if (winArr[i][0] && winArr[i][1] !== '') {
-        
-    //     // increment winner's score
-    //     (winArr[i][1] === 'o')
-    //       ? setOScore(oScore + 1)
-    //       : setXScore(xScore + 1);
-
-    //     // update winner message
-    //     // setGameOver(true);
-    //     // setMsg('Winner: ' + winArr[i][1]);
-
-    //   }
-    // }
-
   };
 
   // funtion to reset game

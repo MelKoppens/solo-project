@@ -16,7 +16,6 @@ const Box = (props) => {
   
 
   return (
-    // all this random stuff to make eslint stop crying about accessability
     <div 
       onClick={updateState} 
       onKeyDown={updateState} 
