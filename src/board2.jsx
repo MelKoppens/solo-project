@@ -5,6 +5,7 @@ const Board = (props) => {
   // states for each of our boxes
   const emptyArray42 = new Array(42).fill(' ');
   const [entries, setEntries] = useState(emptyArray42);
+  // console.log(entries);
   const [circleTurn, setCircleTurn] = useState(true);
   const [count, setCount] = useState(0);
   const [msg, setMsg] = useState('Good Luck! O goes first');
@@ -15,34 +16,7 @@ const Board = (props) => {
   // function to change box states
   const changeBoxState = (rowNum, boxNum) => {
 
-    // /*
-    // *** find correct box to change (animated change) ***
-    const stateIdx = (7 * rowNum) + boxNum + 7;
-    // if the column is full, do not change the state
-    if (entries[stateIdx] !== ' ') return;
-
-    // change specific box depending on whos turn it is
-    let newArr;
-    (circleTurn) 
-      ? newArr = entries.toSpliced(stateIdx, 1, 'o') 
-      : newArr = entries.toSpliced(stateIdx, 1, 'x');
-    if (stateIdx >= 7) newArr = newArr.toSpliced(stateIdx - 7, 1, ' ');
-
-    // set the change
-    setEntries(newArr);
-
-    // animate the token drop
-    if (entries[stateIdx + 7] === ' ') {
-      setTimeout(() => {
-        changeBoxState(rowNum + 1, boxNum);
-      }, "60");
-      console.log('test');
-    }
-    // */
-
-
-    /*
-    // *** find correct box to change (instant change) ***
+    // find correct index to change
     let bottomRowNum = 5;
     while (entries[(7 * bottomRowNum) + boxNum] !== ' ') {
       bottomRowNum--;
@@ -62,20 +36,14 @@ const Board = (props) => {
 
     // set the change
     setEntries(newArr);
-    */
-
-    // wait function
-    function waitForMe(ms) {
-      return new Promise( resolve => {
-        setTimeout(() => resolve(''), ms);
-      })
-    }
 
     // change turns
     setCircleTurn(!circleTurn);
 
     // Tests if there is 4 in a row
-    // helper function
+    let winner = ' ';
+
+    //  *** dry method ***
     function checkFour(arr, mode) {
       let iEnd, jEnd, offset, step;
       switch (mode) {
@@ -98,16 +66,138 @@ const Board = (props) => {
       }
     };
 
-    let winner = ' ';
     let modes = ['row', 'column', 'down-d', 'up-d'];
-
-    
     for (let i = 0; i < 4; i++) {
-      console.log()
       checkFour(newArr, modes[i]);
       if (winner !== ' ') break;
     }
+
+    /*
+    //  *** wet method ***
+    // rows
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (
+          'o' === newArr[7 * i + j] && 
+          newArr[7 * i + j] === newArr[7 * i + j + 1] &&
+          newArr[7 * i + j + 1] === newArr[7 * i + j + 2] &&
+          newArr[7 * i + j + 2] === newArr[7 * i + j + 3]) {
+          winner = 'o';
+        } else if (
+          'x' === newArr[7 * i + j] &&
+          newArr[7 * i + j] === newArr[7 * i + j + 1] &&
+          newArr[7 * i + j + 1] === newArr[7 * i + j + 2] &&
+          newArr[7 * i + j + 2] === newArr[7 * i + j + 3]) {
+          winner = 'x';
+        }
+      }
+    }
+
+    // columns
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 7; j++) {
+        if (
+          'o' === newArr[7 * i + j] && 
+          newArr[7 * i + j] === newArr[7 * i + j + 7] &&
+          newArr[7 * i + j + 7] === newArr[7 * i + j + 14] &&
+          newArr[7 * i + j + 14] === newArr[7 * i + j + 21]) {
+          winner = 'o';
+        } else if (
+          'x' === newArr[7 * i + j] && 
+          newArr[7 * i + j] === newArr[7 * i + j + 7] &&
+          newArr[7 * i + j + 7] === newArr[7 * i + j + 14] &&
+          newArr[7 * i + j + 14] === newArr[7 * i + j + 21]) {
+          winner = 'x';
+        }
+      }
+    }
+
+    // down-diagonals
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (
+          'o' === newArr[7 * i + j] && 
+          newArr[7 * i + j] === newArr[7 * i + j + 8] &&
+          newArr[7 * i + j + 8] === newArr[7 * i + j + 16] &&
+          newArr[7 * i + j + 16] === newArr[7 * i + j + 24]) {
+          winner = 'o';
+        } else if (
+          'x' === newArr[7 * i + j] &&
+          newArr[7 * i + j] === newArr[7 * i + j + 8] &&
+          newArr[7 * i + j + 8] === newArr[7 * i + j + 16] &&
+          newArr[7 * i + j + 16] === newArr[7 * i + j + 24]) {
+          winner = 'x';
+        }
+      }
+    }
+
+    // up-diagonals
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (
+          'o' === newArr[7 * i + j + 21] && 
+          newArr[7 * i + j + 21] === newArr[7 * i + j + 15] &&
+          newArr[7 * i + j + 15] === newArr[7 * i + j + 9] &&
+          newArr[7 * i + j + 9] === newArr[7 * i + j + 3]) {
+          winner = 'o';
+        } else if (
+          'x' === newArr[7 * i + j + 21] && 
+          newArr[7 * i + j + 21] === newArr[7 * i + j + 15] &&
+          newArr[7 * i + j + 15] === newArr[7 * i + j + 9] &&
+          newArr[7 * i + j + 9] === newArr[7 * i + j + 3]) {
+          winner = 'x';
+        }
+      }
+    }
+    */
     
+    /*
+    //  *** less wet method ***
+    // rows
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (newArr[7 * i + j] === newArr[7 * i + j + 1] &&
+          newArr[7 * i + j + 1] === newArr[7 * i + j + 2] &&
+          newArr[7 * i + j + 2] === newArr[7 * i + j + 3]) {
+          if (newArr[7 * i + j] !== ' ') winner = newArr[7 * i + j];
+        }
+      }
+    }
+
+    // columns
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 7; j++) {
+        if (newArr[7 * i + j] === newArr[7 * i + j + 7] &&
+          newArr[7 * i + j + 7] === newArr[7 * i + j + 14] &&
+          newArr[7 * i + j + 14] === newArr[7 * i + j + 21]) {
+          if (newArr[7 * i + j] !== ' ') winner = newArr[7 * i + j];
+        }
+      }
+    }
+
+    // down-diagonals
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (newArr[7 * i + j] === newArr[7 * i + j + 8] &&
+          newArr[7 * i + j + 8] === newArr[7 * i + j + 16] &&
+          newArr[7 * i + j + 16] === newArr[7 * i + j + 24]) {
+          if (newArr[7 * i + j] !== ' ') winner = newArr[7 * i + j];
+        }
+      }
+    }
+
+    // up-diagonals
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (newArr[7 * i + j + 3] === newArr[7 * i + j + 9] &&
+          newArr[7 * i + j + 9] === newArr[7 * i + j + 15] &&
+          newArr[7 * i + j + 15] === newArr[7 * i + j + 21]) {
+          if (newArr[7 * i + j + 3] !== ' ') winner = newArr[7 * i + j + 3];
+        }
+      }
+    }
+    */
+
     if (winner !== ' ') {
       console.log('Winner!!!');
       (winner === 'o')
@@ -146,6 +236,11 @@ const Board = (props) => {
     setXScore(0);
   }
   
+  // winner detection
+  // all 3 values in row are same
+  // all 3 values in column are same
+  // diagonals
+  // consider useEffect 
   // *** BE CAREFUL OF USING USEEFFECT WITH NON-ASYNC EVENTS
   // YOU COULD END UP RE-RENDING PARTS OF THE PROGRAMMING THAT YOU DIDN'T KNOW YOU WERE RE-RENDERING
   // IF YOU CAN, UTILIZE CONDITIONS THAT CALL USESTATE INSTEAD ***
@@ -157,7 +252,7 @@ const Board = (props) => {
         <h1>4-in-a-row</h1>
       </div>
 
-      <div>
+      <div classname="rack">
         <Row rowNum={0} handleClick={changeBoxState} gameOver={gameOver} states={entries.slice(0,7)}/>
         <Row rowNum={1} handleClick={changeBoxState} gameOver={gameOver} states={entries.slice(7,14)}/>
         <Row rowNum={2} handleClick={changeBoxState} gameOver={gameOver} states={entries.slice(14,21)}/>

@@ -4,7 +4,7 @@ const Box = (props) => {
 
   const updateState = () => {
     // only change box states when game is not over
-    if (!props.gameOver) props.handleClick(props.rowNum, props.boxNum);
+    if (!props.gameOver) props.handleClick(-1, props.boxNum);
   };
 
   // if props.state = x or o

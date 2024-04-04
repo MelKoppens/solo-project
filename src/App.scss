@@ -1,15 +1,15 @@
 body {
-  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
   font-family: "Arial";
-}
-
-.container {
-  padding: 0 2.5%;
 }
 
 .board {
   height: 450px;
   width: 400px;
+  background-color: rgb(157, 177, 241);
   border: 3px solid black;
   border-radius: 25px;
   display: flex;
@@ -17,6 +17,11 @@ body {
   justify-content: center;
   align-items: center;
   padding: 30px;
+}
+
+.rack {
+  background-color: rgb(5, 14, 45);
+  border: 20px solid black;
 }
 
 .header {
@@ -51,6 +56,7 @@ body {
 .box {
   height: 50px;
   width: 50px;
+  background-color: white;
   border: 2px solid black;
   text-align: center;
   vertical-align: middle;

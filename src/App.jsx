@@ -11,7 +11,6 @@ export function App() {
   return (
     <div>
       <div className="board">
-        {/* <h1>Welcome { new Date().toDateString() }</h1> */}
         <Board />
       </div>
     </div>
