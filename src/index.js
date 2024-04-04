@@ -3,7 +3,7 @@ import React from 'react';
 // ReactDOM is no longer supported
 // import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { App } from './App';
+import { App } from './App.jsx';
 import './App.scss'
 
 // ReactDOM is no longer supported

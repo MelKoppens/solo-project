@@ -9,7 +9,7 @@ body {
 
 .board {
   height: 450px;
-  width: 400px;
+  width: 350px;
   border: 3px solid black;
   border-radius: 25px;
   display: flex;
@@ -43,18 +43,17 @@ body {
 
 .row {
   display: flex;
-  flex-direction: row;
-  height: 50px;
+  height: 100px;
   margin: 6px 0px;
 }
 
 .box {
-  height: 50px;
-  width: 50px;
+  height: 100px;
+  width: 100px;
   border: 2px solid black;
   text-align: center;
   vertical-align: middle;
-  font-size: 35px;
+  font-size: 70px;
   border-radius: 25px;
   margin: 0px 2px;
 }
